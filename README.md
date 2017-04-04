@@ -5,12 +5,13 @@ After knowing basics of machine learning, deep learning, and TensorFlow/Keras, w
 Kaggle provides many interesting problems for machine learning experts. 
 This repository hosts interesting Kaggle problems and show how to solve these problems using decent deep learning models.
 
-## Kaggle problem naming 
-k0-00-quick_title.py (or ipynb)
+## Kaggle problem directory naming 
+k0-00-quick_title
 
 * difficulty(k0, k1, ... k9): 0: easy, 5: normal, 9: very difficult
 * k0-XX: 00 serial number
 * quick_title: quick title for the Kaggle data
+* put py, ipynb, and data files in the directory
 
 ## Content of each file
 Please see k0-00-template.ipynb
