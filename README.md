@@ -54,3 +54,9 @@ Please see k0-00-template.ipynb
 
  ## Contributions
  We welcome any contributions including writing issues and sending pull requests.
+ 
+ ## References (Thanks to the TF-KR user group)
+ * https://www.quora.com/What-Kaggle-competitions-should-a-beginner-start-with-1
+ * http://ndres.me/kaggle-past-solutions/
+ * http://www.chioka.in/kaggle-competition-solutions/
+ * http://analyticscosm.com/learning-predictive-analytics-kaggle-competition-solutions/
