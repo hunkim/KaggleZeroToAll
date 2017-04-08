@@ -11,6 +11,7 @@ import configparser
 import bs4
 import requests
 import argparse
+import os
 
 from urllib.parse import urljoin
 
@@ -52,7 +53,7 @@ def upload(competition, session, file, message=None):
     upload_URL = f"https://www.kaggle.com/c/{competition}/submissions/attach"
     submit_URL = urljoin(upload_URL, "/competitions/submissions/accept")
 
-    bs = bs4.BeautifulSoup(session.get(upload_URL).text, 'lxml')
+    bs = bs4.BeautifulSoup(session.get(upload_URL).text, "html.parser")
     token = bs.find('input', attrs={"name": "__RequestVerificationToken"})['value']
     competition_id = bs.find('input', attrs={"id": "CompetitionId"})['value']
 
@@ -69,7 +70,13 @@ def upload(competition, session, file, message=None):
 
 
 if __name__ == '__main__':
-    username, password = read_config()
+    kaggle_int = 'kaggle.ini'
+
+    if not os.path.exists(kaggle_int):
+        print("Please create kaggle.ini first. See kaggle.ini.sample.")
+        exit()
+
+    username, password = read_config(kaggle_int)
 
     if username == "KAGGLE@KAGGLE.COM" or password == "KAGGLE_PASSWORD":
         print("Please setup kaggle.ini first")
