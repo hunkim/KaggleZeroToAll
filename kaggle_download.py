@@ -67,7 +67,7 @@ def get_data_url_by_name(competition):
     return filenames
 
 
-def read_config(file='kaggle.ini'):
+def read_config(file):
     parser = configparser.ConfigParser()
     parser.read(file)
     username = parser.get('account', 'username')
@@ -102,12 +102,17 @@ def run_star(args):
 
 
 if __name__ == '__main__':
+    kaggle_int = 'kaggle.ini'
+
+    if not os.path.exists(kaggle_int):
+        print("Please create kaggle.ini first. See kaggle.ini.sample.")
+        exit()
 
     competition, destination = read_args()
-    username, password = read_config()
+    username, password = read_config(kaggle_int)
 
     if username == "KAGGLE@KAGGLE.COM" or password == "KAGGLE_PASSWORD":
-        print("Please setup kaggle.ini first")
+        print("Please setup kaggle.ini using your kaggle username and password.")
 
     else:
         session = login(username, password)

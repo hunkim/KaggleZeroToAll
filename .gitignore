@@ -1,6 +1,7 @@
 # Data format
 *.csv
 input/
+kaggle.ini
 
 ###Python###
 

@@ -23,6 +23,11 @@ Please see k0-00-template.ipynb
 * results
 * future work and exercises
 
+## Install requirements
+```bash
+pip install -r requirements.txt
+```
+
 ## Kaggle Utils
 * `kaggle_download.py`
     1. Fill out your `username` and `password` in kaggle.ini
