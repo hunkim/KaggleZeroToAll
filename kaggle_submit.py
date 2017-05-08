@@ -50,7 +50,7 @@ def read_args():
 
 
 def upload(competition, session, file, message=None):
-    upload_URL = f"https://www.kaggle.com/c/{competition}/submissions/attach"
+    upload_URL = "https://www.kaggle.com/c/{}/submissions/attach".format(competition)
     submit_URL = urljoin(upload_URL, "/competitions/submissions/accept")
 
     bs = bs4.BeautifulSoup(session.get(upload_URL).text, "html.parser")
@@ -85,4 +85,4 @@ if __name__ == '__main__':
         session = login(username, password)
         competition_name, submission_file, message = read_args()
         res = upload(competition_name, session, submission_file, message)
-        print(f"Uploaded: https://www.kaggle.com/c/{competition_name}/submissions")
+        print("Uploaded: https://www.kaggle.com/c/{}/submissions".format(competition_name))

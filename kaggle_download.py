@@ -23,7 +23,7 @@ def login(username, password):
     Parameters
     ----------
     username : str
-        Usually, it's an email
+        Usually, it's your email
 
     password : str
 
@@ -48,7 +48,7 @@ def download(url, session, destination):
         http://..../data.csv or data.zip
 
     session : `requests.session`
-        From `login(username, password)
+        From `login(username, password)`
 
     destination : str
         Path for a downloaded data
