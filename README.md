@@ -6,12 +6,16 @@ Kaggle provides many interesting problems for machine learning experts.
 This repository hosts interesting Kaggle problems and show how to solve these problems using decent deep learning models.
 
 ## Kaggle problem directory naming 
-k0-00-quick_title
+k0-00-short-title
 
-* difficulty(k0, k1, ... k9): 0: easy, 5: normal, 9: very difficult
+* Difficulty (k0, k1, ... k9): 
+    - 0: easy
+    - 5: normal
+    - 9: very difficult
 * k0-XX: 00 serial number
-* quick_title: quick title for the Kaggle data
-* put py, ipynb, and data files in the directory
+* short-title: title for the Kaggle data
+* put `.py`, `.ipynb`, and data files in the directory
+    - If data files are large, you can create a script. Please check [this](k0-01-titanic/data_download.sh)
 
 ## Content of each file
 Please see k0-00-template.ipynb
@@ -23,39 +27,48 @@ Please see k0-00-template.ipynb
 * results
 * future work and exercises
 
-## Install requirements
+## Dependencies for Kaggle Utils (optional)
+```
+requests==2.13.0
+beautifulsoup4==4.6.0
+```
+or 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Kaggle Utils
-* `kaggle_download.py`
-    1. Fill out your `username` and `password` in kaggle.ini
-    2. Accept the agreement term in Kaggle website by clicking any button like submit predictions or download a dataset
-    3. Find out a competition name
+## Kaggle Utils (optional)
+* `kaggle_download.py`: Kaggle download script
+    1. Create **kaggle.ini**
+        - Copy `kaggle.ini.sample` and name it `kaggle.ini`
+        - Fill out your `username` and `password` in kaggle.ini
+    2. **Accept the agreement term** in Kaggle website
+        - Click the download button on the competition main site
+    3. Find a **competition name**
         * Competition name can be found in the URL
-        * For example, if the url is `https://www.kaggle.com/c/digit-recognizer`,  
-          then the competition name is `digit-recognizer`
-    3. Run the following command in bash to download a dataset
+        * For example, if the url is https://www.kaggle.com/c/digit-recognizer,  
+          then the competition name is **digit-recognizer**
+    3. In terminal,
     ```bash
-    # python kaggle_download.py `competition-name` --destination `path/to/save/dataset`
-    # Example
+    # python kaggle_download.py competition-name --destination path/to/save/dataset
+    # Example:
     $ python kaggle_download.py digit-recognizer --destination k0-01-mnist/input
     ```
-    * `python -h`
-    ```bash
-    usage: kaggle_download.py [-h] [--destination DESTINATION] competition
 
-    positional arguments:
-      competition           name of competition. For example, if the URL is
-                            http://www.kaggle.com/c/digit-recognizer then enter
-                            digit-recognizer
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      --destination DESTINATION
-                            local path for datasets to be downloaded (default: ./)
+* `kaggle_submit.py`: Kaggle submission script
+    1. You can also submit your submission
+    2. In terminal,
+    ```bash 
+    # python kaggle_submit.py competition-name /path/to/submission.csv -m "Submission message"
+    # Example:
+    python kaggle_submit.py digit-recognizer k0-01-mnist/submission.csv -m "First Submission"
     ```
+
+## Tests
+
+```bash
+py.test
+```
 
  ## Contributions
  We welcome any contributions including writing issues and sending pull requests.

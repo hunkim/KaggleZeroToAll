@@ -18,6 +18,19 @@ from urllib.parse import urljoin
 
 
 def login(username, password):
+    """Returns a logged in session
+
+    Parameters
+    ----------
+    username : str
+        Usually, it's your email
+
+    password : str
+
+    Returns
+    ----------
+    session : `requests.session`
+    """
     session = requests.session()
     login_info = {"UserName": username, "Password": password}
     session.post("https://www.kaggle.com/account/login?ReturnUrl=kaggle.com", login_info)
@@ -26,18 +39,35 @@ def login(username, password):
 
 
 def download(url, session, destination):
+    """Downloads the file(URL) to the destination
+
+    Parameters
+    ----------
+    url : str
+        URL to a datafile
+        http://..../data.csv or data.zip
+
+    session : `requests.session`
+        From `login(username, password)`
+
+    destination : str
+        Path for a downloaded data
+        It's a directory name.
+        The filename will be same as in the URL's filename
+    """
     r = session.post(url)
     local_filename = os.path.join(destination, url.split('/')[-1])
 
+    total_length = r.headers.get('content-length')
+    content_type = r.headers.get('Content-Type', '')
+    content_disp = r.headers.get('Content-Disposition', '')
+
+    if 'text/html' in content_type and 'attachment' not in content_disp:
+        print("Please accept the agreement terms by going to {}".format(url))
+        return False
+
     # Writes the data to a local file one chunk at a time.
     with open(local_filename, 'wb') as f:
-        total_length = r.headers.get('content-length')
-        content_type = r.headers.get('Content-Type', '')
-        content_disp = r.headers.get('Content-Disposition', '')
-
-        if 'text/html' in content_type and 'attachment' not in content_disp:
-            print(f"Please accept the agreement terms by going to {url}")
-            return False
         if total_length is None:  # no content length header
             f.write(r.content)
 
@@ -52,14 +82,28 @@ def download(url, session, destination):
                 dl += len(data)
                 done = int(50 * dl / total_length)
 
-                print(f"[{'=' * done}{' ' * (50 - done)}] {local_filename}", flush=True, end='\r')
+                msg = "[{}{}] {}".format("=" * done, ' ' * (50 - done), local_filename)
+                print(msg, flush=True, end='\r')
 
             print()
 
 
 def get_data_url_by_name(competition):
+    """Returns downloadable URLs from a competition name
+
+    Parameters
+    ----------
+    competition : str
+        Competition name can be found in the URL
+
+    Returns
+    ----------
+    filenames : list
+        Each file is the url to a datafile
+        Something like http://kaggle.com/asdfaf/train.csv
+    """
     base_url = "http://www.kaggle.com/"
-    url = urljoin(base_url, f"c/{competition}/data")
+    url = urljoin(base_url, "c/{}/data".format(competition))
     r = requests.get(url)
     bs = bs4.BeautifulSoup(r.text, 'html.parser')
     filenames = re.findall('"url":"(/c/{}/download/[^"]+)"'.format(competition), bs.text)
@@ -68,6 +112,18 @@ def get_data_url_by_name(competition):
 
 
 def read_config(file):
+    """Reads a config(kaggle.ini) and returns username/password
+
+    Parameters
+    ----------
+    file : str
+        /Path/to/kaggle.ini
+
+    Returns
+    ----------
+    username : str
+    password : str
+    """
     parser = configparser.ConfigParser()
     parser.read(file)
     username = parser.get('account', 'username')
@@ -77,12 +133,27 @@ def read_config(file):
 
 
 def read_args():
+    """Returns a competition name and destination
+
+    ``ArgumentParser`` helper
+    And it will create a destination directory if it's not available
+
+    Returns
+    ----------
+    competition : str
+    destination : str
+    """
+
     def check_destination(path):
+        """Makes a directory if not exists"""
         os.makedirs(path, exist_ok=True)
-    parser = argparse.ArgumentParser()
+
+    parser = argparse.ArgumentParser(description="Kaggle Download Script. Please set up ``kaggle.ini`` before using")
+
     parser.add_argument("competition",
                         help="name of competition. For example, if the URL is http://www.kaggle.com/c/digit-recognizer then enter digit-recognizer")
-    parser.add_argument("--destination", default='.',
+    parser.add_argument("--destination",
+                        default='.',
                         help="local path for datasets to be downloaded (default: ./)")
     args = parser.parse_args()
 
@@ -93,23 +164,15 @@ def read_args():
     return competition, destination
 
 
-def run_download(fn, args):
-    return fn(*args)
-
-
-def run_star(args):
-    return run_download(*args)
-
-
 if __name__ == '__main__':
-    kaggle_int = 'kaggle.ini'
+    kaggle_ini = 'kaggle.ini'
 
-    if not os.path.exists(kaggle_int):
+    if not os.path.exists(kaggle_ini):
         print("Please create kaggle.ini first. See kaggle.ini.sample.")
         exit()
 
     competition, destination = read_args()
-    username, password = read_config(kaggle_int)
+    username, password = read_config(kaggle_ini)
 
     if username == "KAGGLE@KAGGLE.COM" or password == "KAGGLE_PASSWORD":
         print("Please setup kaggle.ini using your kaggle username and password.")
@@ -119,6 +182,6 @@ if __name__ == '__main__':
         data_url_list = get_data_url_by_name(competition)
 
         pool = pool.Pool()
-        tasks = [(download, (url, session, destination)) for url in data_url_list]
-        results = pool.map_async(run_star, tasks)
+        tasks = [(url, session, destination) for url in data_url_list]
+        results = pool.starmap_async(download, tasks)
         results.wait()
